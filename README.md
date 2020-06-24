@@ -1,35 +1,35 @@
-# FastOpenStruct
+# SonicStruct
 
-FastOpenStruct is a reimplementation of Ruby's OpenStruct that avoids invalidating MRI's method caches on every instantiation.
+SonicStruct is a reimplementation of Ruby's OpenStruct that avoids invalidating MRI's method caches on every instantiation.
 
 It should be a drop in replacement for OpenStruct.
 
-[![Build Status via Travis CI](https://travis-ci.org/charliesome/fast_open_struct.png?branch=master)](https://travis-ci.org/charliesome/fast_open_struct)
+[![Build Status via Travis CI](https://travis-ci.org/charliesome/almost_open_struct.png?branch=master)](https://travis-ci.org/charliesome/almost_open_struct)
 
 ## Performance
 
-FastOpenStruct is **very** fast when your OpenStructs tend to have static sets of attributes:
+SonicStruct is **very** fast when your OpenStructs tend to have static sets of attributes:
 
 ```
 λ ruby -I./lib bench/attribute_lookup.rb
                      user     system      total        real
-OpenStruct       0.730000   0.000000   0.730000 (  0.732052)
-FastOpenStruct   0.220000   0.000000   0.220000 (  0.224770)
+OpenStruct         0.730000   0.000000   0.730000 (  0.732052)
+SonicStruct   0.220000   0.000000   0.220000 (  0.224770)
 ```
 
 ```
 λ ruby -I./lib bench/attribute_assignment.rb
 Attribute assignment:
                      user     system      total        real
-OpenStruct       1.200000   0.000000   1.200000 (  1.196867)
-FastOpenStruct   0.210000   0.000000   0.210000 (  0.210626)
+OpenStruct         1.200000   0.000000   1.200000 (  1.196867)
+SonicStruct   0.210000   0.000000   0.210000 (  0.210626)
 ```
 
 ```
 λ ruby -I./lib bench/10_000_instantiations.rb
                      user     system      total        real
-OpenStruct       0.630000   0.010000   0.640000 (  0.645598)
-FastOpenStruct   0.240000   0.000000   0.240000 (  0.239307)
+OpenStruct         0.630000   0.010000   0.640000 (  0.645598)
+SonicStruct   0.240000   0.000000   0.240000 (  0.239307)
 ```
 
 However, if you're using dynamically set attributes heavily, it's significantly slower:
@@ -37,17 +37,17 @@ However, if you're using dynamically set attributes heavily, it's significantly 
 ```
 λ ruby -I./lib bench/dynamic_attribute_lookup.rb
 Dynamic attribute lookup:
-                     user     system      total        real
-OpenStruct       0.660000   0.000000   0.660000 (  0.661448)
-FastOpenStruct   2.170000   0.010000   2.180000 (  2.174698)
+                       user     system      total        real
+OpenStruct         0.660000   0.000000   0.660000 (  0.661448)
+SonicStruct   2.170000   0.010000   2.180000 (  2.174698)
 ```
 
 ```
 λ ruby -I./lib bench/dynamic_attribute_assignment.rb
 Dynamic attribute assignment:
                      user     system      total        real
-OpenStruct       1.190000   0.000000   1.190000 (  1.198603)
-FastOpenStruct   6.020000   0.010000   6.030000 (  6.015700)
+OpenStruct         1.190000   0.000000   1.190000 (  1.198603)
+SonicStruct   6.020000   0.010000   6.030000 (  6.015700)
 ```
 
 ## Licence

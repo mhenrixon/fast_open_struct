@@ -1,0 +1,12 @@
+inherit_gem:
+  rubocop-mhenrixon:
+    - config/default.yml
+
+AllCops:
+  TargetRubyVersion: 2.5
+  Exclude:
+    - "**/*.erb"
+
+RSpec/MultipleExpectations:
+  Enabled: false
+

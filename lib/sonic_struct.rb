@@ -1,7 +1,10 @@
-class FastOpenStruct
+# frozen_string_literal: true
+
+class SonicStruct
   class << self
-  private
-    alias_method :__new, :new
+    private
+
+    alias __new new
     private :__new
 
     def __create_class(keys)
@@ -55,6 +58,7 @@ class FastOpenStruct
 
   def each_pair
     return to_enum(__method__) unless block_given?
+
     instance_variables.each do |ivar|
       yield ivar[1..-1].intern, instance_variable_get(ivar)
     end
@@ -62,34 +66,39 @@ class FastOpenStruct
   end
 
   def ==(other)
-    return false unless other.is_a? FastOpenStruct
+    return false unless other.is_a? SonicStruct
+
     ivars = instance_variables
     other_ivars = other.instance_variables
     return false if (ivars - other_ivars).any? || (ivars.length != other_ivars.length)
+
     ivars.all? { |ivar| instance_variable_get(ivar) == other.instance_variable_get(ivar) }
   end
 
   def eql?(other)
-    return false unless other.is_a? FastOpenStruct
+    return false unless other.is_a? SonicStruct
+
     ivars = instance_variables
     other_ivars = other.instance_variables
     return false if (ivars - other_ivars).any? || (ivars.length != other_ivars.length)
+
     ivars.all? { |ivar| instance_variable_get(ivar).eql? other.instance_variable_get(ivar) }
   end
 
   def inspect
     str = "#<#{__apparent_class__}"
-    ids = (Thread.current[:__fast_open_struct_inspect_key__] ||= Set.new)
-    return str << " ...>" if ids.include? object_id
+    ids = (Thread.current[:__almost_open_struct_inspect_key__] ||= Set.new)
+    return str << ' ...>' if ids.include? object_id
+
     ids << object_id
     begin
       first = true
       instance_variables.each do |ivar|
-        str << "," unless first
+        str << ',' unless first
         first = false
         str << " #{ivar[1..-1]}=#{instance_variable_get(ivar).inspect}"
       end
-      str << ">"
+      str << '>'
     ensure
       ids.delete object_id
     end
@@ -107,30 +116,43 @@ class FastOpenStruct
     hash
   end
 
-  EQ = "=".freeze
+  EQ = '='
 
   def method_missing(sym, *args)
-    if args.size == 0
+    if args.empty?
       ivar = __ivar_for_name__(sym)
       instance_variable_defined?(ivar) ? instance_variable_get(ivar) : nil
-    elsif args.size == 1 and sym[-1] == EQ
+    elsif (args.size == 1) && (sym[-1] == EQ)
       instance_variable_set __ivar_for_setter__(sym), args[0]
     else
       super
     end
   end
 
-  def respond_to?(name, include_all=false)
+  def respond_to?(name, include_all = false)
+    respond?(name, include_all) do
+      super
+    end
+  end
+
+  def respond_to_missing?(name, include_all = false)
+    respond?(name, include_all) do
+      super
+    end
+  end
+
+  private
+
+  def respond?(name, include_all = false)
     if name[-1] == EQ
       respond_to?(name[0...-1], include_all)
     elsif instance_variable_defined?(__ivar_for_name__(name))
       true
     else
-      super
+      yield
     end
   end
 
-private
   def __ivar_for_name__(name)
     @@ivar_for_names[name] ||= :"@#{name}"
   end

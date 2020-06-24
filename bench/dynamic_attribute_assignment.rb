@@ -1,13 +1,15 @@
-require "benchmark"
+# frozen_string_literal: true
+
+require 'benchmark'
 include Benchmark
 
-require_relative "../lib/fast_open_struct"
-require "ostruct"
+require_relative '../lib/sonic_struct'
+require 'ostruct'
 
-puts "Dynamic attribute assignment:"
+puts 'Dynamic attribute assignment:'
 
 bm 14 do |b|
-  b.report "OpenStruct" do
+  b.report 'OpenStruct' do
     os = OpenStruct.new
     1_000_000.times do
       os.a = 4
@@ -16,8 +18,8 @@ bm 14 do |b|
     end
   end
 
-  b.report "FastOpenStruct" do
-    os = FastOpenStruct.new
+  b.report 'SonicStruct' do
+    os = SonicStruct.new
     1_000_000.times do
       os.a = 4
       os.b = 5

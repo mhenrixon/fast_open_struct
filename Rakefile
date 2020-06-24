@@ -1,8 +1,10 @@
-require "rake/testtask"
+# frozen_string_literal: true
+
+require 'rake/testtask'
 
 Rake::TestTask.new do |t|
-  t.test_files = Dir["test/*.rb"]
+  t.test_files = Dir['test/*.rb']
   t.warning = true
 end
 
-task :default => :test
+task default: :test
